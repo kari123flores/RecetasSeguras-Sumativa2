@@ -1,0 +1,215 @@
+
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle de receta | RecetasSeguras</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+
+<header>
+    <h1>RecetasSeguras</h1>
+    <nav>
+        <a th:href="@{/recetas}">Inicio</a>
+        <a th:href="@{/recetas/buscar}">Buscar recetas</a>
+
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="boton">
+                Cerrar sesión
+            </button>
+        </form>
+    </nav>
+</header>
+
+<main>
+    <article class="tarjeta"
+             style="max-width:850px;margin:30px auto;">
+
+        <h2 th:text="${receta.nombre}">
+            Nombre de la receta
+        </h2>
+
+        <!-- Imagen de la receta -->
+        <img th:if="${receta.imagen != null and !#strings.isEmpty(receta.imagen)}"
+             th:src="${receta.imagen}"
+             th:alt="${receta.nombre}"
+             style="width:100%;max-height:350px;object-fit:cover;border-radius:12px;">
+
+        <!-- Video de preparación -->
+        <section th:if="${receta.video != null and !#strings.isEmpty(receta.video)}">
+            <h3>Video de preparación</h3>
+
+            <video controls preload="metadata"
+                   style="width:100%;border-radius:12px;">
+                <source th:src="${receta.video}">
+                Tu navegador no admite videos.
+            </video>
+        </section>
+
+        <h3>Información de la receta</h3>
+
+        <p>
+            <strong>Tipo de cocina:</strong>
+            <span th:text="${receta.tipo}"></span>
+        </p>
+
+        <p>
+            <strong>País de origen:</strong>
+            <span th:text="${receta.pais}"></span>
+        </p>
+
+        <p>
+            <strong>Dificultad:</strong>
+            <span th:text="${receta.dificultad}"></span>
+        </p>
+
+        <p>
+            <strong>Tiempo de preparación:</strong>
+            <span th:text="${receta.tiempo}"></span> minutos
+        </p>
+
+        <h3>Ingredientes</h3>
+        <p th:text="${receta.ingrediente}"></p>
+
+        <h3>Instrucciones de preparación</h3>
+        <p th:text="${receta.instrucciones}"></p>
+
+        <hr>
+
+        <!-- Subir fotografías y videos -->
+        <h3>Agregar fotografías y videos</h3>
+
+        <p>Comparte fotografías y videos de preparación de esta receta.</p>
+
+        <form th:action="@{/recetas/{id}/archivo(id=${receta.id})}"
+              method="post"
+              enctype="multipart/form-data">
+
+            <input type="hidden"
+                   th:name="${_csrf.parameterName}"
+                   th:value="${_csrf.token}">
+
+            <label for="archivo">Seleccionar archivo:</label>
+
+            <input type="file"
+                   id="archivo"
+                   name="archivo"
+                   accept="image/jpeg,image/png,image/webp,video/mp4,video/webm"
+                   required>
+
+            <p>Formatos permitidos: JPG, PNG, WEBP, MP4 y WEBM. Máximo 20 MB.</p>
+
+            <button type="submit" class="boton">
+                Subir archivo
+            </button>
+        </form>
+
+        <hr>
+
+        <!-- Compartir receta -->
+        <h3>Compartir receta</h3>
+        <p>Comparte esta receta con tus amigos.</p>
+
+        <a class="boton"
+           id="compartir-whatsapp"
+           href="#"
+           style="color:white !important;"
+           target="_blank"
+           rel="noopener noreferrer"
+           th:attr="data-id=${receta.id}">
+            Compartir por WhatsApp
+        </a>
+
+        <button type="button"
+                class="boton"
+                id="copiar-enlace"
+                th:attr="data-id=${receta.id}">
+            Copiar enlace
+        </button>
+
+        <p id="mensaje-compartir" aria-live="polite"></p>
+
+        <hr>
+
+        <!-- Comentarios y valoraciones -->
+        <h3>Comentarios y valoraciones</h3>
+
+        <div th:if="${comentarios != null and !comentarios.isEmpty()}">
+
+            <div th:each="comentario : ${comentarios}"
+                 style="background:#f4f4f4;padding:15px;
+                        margin:12px 0;border-radius:10px;">
+
+                <strong th:text="${comentario.usuario}">
+                    Usuario
+                </strong>
+
+                <p>
+                    <strong>Valoración:</strong>
+                    <span th:text="${comentario.valoracion}">5</span>
+                    / 5
+                </p>
+
+                <p th:text="${comentario.texto}">
+                    Comentario
+                </p>
+            </div>
+        </div>
+
+        <p th:if="${comentarios == null or comentarios.isEmpty()}">
+            Todavía no hay comentarios.
+        </p>
+
+        <!-- Formulario de comentarios -->
+        <h3>Deja tu comentario</h3>
+
+        <form th:action="@{/recetas/{id}/comentar(id=${receta.id})}"
+              method="post">
+
+            <label for="texto">Tu comentario:</label>
+
+            <textarea id="texto"
+                      name="texto"
+                      rows="4"
+                      maxlength="1000"
+                      required
+                      style="width:100%;padding:10px;
+                             margin:10px 0;"></textarea>
+
+            <label for="valoracion">Tu valoración:</label>
+
+            <select id="valoracion"
+                    name="valoracion"
+                    required
+                    style="padding:10px;margin:10px;">
+                <option value="5">5 estrellas</option>
+                <option value="4">4 estrellas</option>
+                <option value="3">3 estrellas</option>
+                <option value="2">2 estrellas</option>
+                <option value="1">1 estrella</option>
+            </select>
+
+            <button type="submit" class="boton">
+                Publicar comentario
+            </button>
+        </form>
+
+        <hr>
+
+        <a class="boton" th:href="@{/recetas/buscar}">
+            Volver a las recetas
+        </a>
+
+    </article>
+</main>
+
+<footer>
+    <p>© 2026 RecetasSeguras | Proyecto académico Duoc UC</p>
+</footer>
+
+<script th:src="@{/js/compartir.js}" defer></script>
+
+</body>
+</html>

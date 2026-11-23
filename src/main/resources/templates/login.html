@@ -1,0 +1,60 @@
+
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar sesión | RecetasSeguras</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+
+    <header>
+        <h1>🍳 RecetasSeguras</h1>
+        <nav>
+            <a th:href="@{/recetas}">Inicio</a>
+            <a th:href="@{/recetas/buscar}">Buscar recetas</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="tarjeta" style="max-width: 450px; margin: 50px auto;">
+            <h2> Iniciar sesión</h2>
+            <p>Ingresa tus credenciales para acceder a las recetas completas.</p>
+
+            <div th:if="${param.error}" style="color: #b91c1c;">
+                Usuario o contraseña incorrectos.
+            </div>
+
+            <div th:if="${param.logout}" style="color: #166534;">
+                Has cerrado sesión correctamente.
+            </div>
+
+            <form th:action="@{/login}" method="post">
+                <label for="username">Usuario:</label>
+                <input type="text" id="username" name="username"
+                       required autocomplete="username"
+                       style="width: 100%; padding: 12px; margin: 8px 0 20px;">
+
+                <label for="password">Contraseña:</label>
+                <input type="password" id="password" name="password"
+                       required autocomplete="current-password"
+                       style="width: 100%; padding: 12px; margin: 8px 0 20px;">
+
+                <button type="submit" class="boton" style="width: 100%;">
+                    Ingresar
+                </button>
+            </form>
+
+            <p style="text-align: center; margin-top: 20px;">
+                <a th:href="@{/recetas}">← Volver al inicio</a>
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2026 RecetasSeguras | Proyecto académico Duoc UC</p>
+    </footer>
+
+</body>
+</html>
